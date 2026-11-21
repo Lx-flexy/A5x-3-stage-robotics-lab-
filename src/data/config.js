@@ -601,13 +601,13 @@ export function getStaticCollisionBoxes() {
   addBox([48 - wallThickness / 2, 2.8, 4.5], [48 + wallThickness / 2, labHeight, 7.5], 'gamma-arena-door-lintel');
   addBox([48 - wallThickness / 2, 0, 7.5], [48 + wallThickness / 2, labHeight, labDepth], 'gamma-arena-divider-front');
 
-  // 8. Outside boundaries (Walkway edges so player doesn't fall off campus)
-  // South exterior boundary (Z = 24)
-  addBox([-6, 0, 24], [64, 1.2, 24.5], 'outside-south-railing');
-  // West exterior boundary (X = -6)
-  addBox([-6.5, 0, 11.5], [-6, 1.2, 24.5], 'outside-west-railing');
-  // East exterior boundary (X = 64)
-  addBox([64, 0, 11.5], [64.5, 1.2, 24.5], 'outside-east-railing');
+  // 8. Outside boundaries (Plaza edges at Z = 26.3m, X in [-10, 70])
+  // South exterior boundary hedge (Z = 26.3)
+  addBox([-10, 0, 26.2], [70, 1.2, 26.8], 'outside-south-hedge');
+  // West exterior boundary curb (X = -10)
+  addBox([-10.6, 0, 11.5], [-10, 1.2, 26.8], 'outside-west-curb');
+  // East exterior boundary curb (X = 70)
+  addBox([70, 0, 11.5], [70.6, 1.2, 26.8], 'outside-east-curb');
 
   return boxes;
 }

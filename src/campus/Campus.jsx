@@ -1,17 +1,18 @@
 import React from 'react';
 import { useStore } from '../store/useStore';
 import { Architecture } from './Architecture';
+import { Facade } from './Facade';
 import { Lighting } from './Lighting';
 import { Signage } from './Signage';
-import { OutsideArea } from './OutsideArea';
+import { EntrancePlaza } from './EntrancePlaza';
 import { ZoneWallSignage } from './ZoneWallSignage';
 import { LabAlpha } from '../labs/Alpha/LabAlpha';
 import { LabBeta } from '../labs/Beta/LabBeta';
 import { LabGamma } from '../labs/Gamma/LabGamma';
 
 /**
- * High-Performance Campus Root (Revision 4)
- * Uses room adjacency visibility culling to avoid rendering non-adjacent rooms.
+ * High-Performance Campus Root (Revision 18)
+ * Integrates new <Facade/>, <EntrancePlaza/>, <Architecture/>, and distinct labs.
  */
 export function Campus() {
   if (typeof window !== 'undefined') {
@@ -38,30 +39,33 @@ export function Campus() {
       {/* 2. Architectural Shell: Floors, Navy Walls, Partitions, Sliding Doors */}
       <Architecture />
 
-      {/* 3. High-tech Brand Signage & Lab Headers */}
+      {/* 3. High-Performance Front Facade, Curtain Wall Glazing & AutoDoor */}
+      <Facade />
+
+      {/* 4. Brand Signage & Feature Wall Signs */}
       <Signage />
 
-      {/* 4. Outside Plaza Deck, Landscaping & Entrance Totem */}
+      {/* 5. Outside Plaza Deck, Landscaping & Entrance Features */}
       <group visible={isOutsideVisible}>
-        <OutsideArea />
+        <EntrancePlaza />
       </group>
 
-      {/* 5. Complete Lab Alpha: Foundation Lab */}
+      {/* 6. Complete Lab Alpha: Foundation Lab */}
       <group visible={isAlphaVisible}>
         <LabAlpha />
       </group>
 
-      {/* 6. Complete Lab Beta: Development Lab */}
+      {/* 7. Complete Lab Beta: Development Lab */}
       <group visible={isBetaVisible}>
         <LabBeta />
       </group>
 
-      {/* 7. Complete Lab Gamma: Advanced Innovation Lab & Arena Bay */}
+      {/* 8. Complete Lab Gamma: Advanced Innovation Lab & Arena Bay */}
       <group visible={isGammaVisible}>
         <LabGamma />
       </group>
 
-      {/* 8. Wall-Mounted and Ceiling-Hung Architectural Zone Signage */}
+      {/* 9. Wall-Mounted and Ceiling-Hung Architectural Zone Signage */}
       <ZoneWallSignage />
     </group>
   );

@@ -278,8 +278,8 @@ export default function CampusPage() {
           <PerformanceMonitor onDecline={() => setQuality('low')} />
           <ControlledCamera viewMode={viewMode} currentPresetKey={activePreset} />
           
-          <color attach="background" args={['#040E1E']} />
-          <fog attach="fog" args={['#040E1E', 35, 95]} />
+          <color attach="background" args={['#B8D7F5']} />
+          <fog attach="fog" args={['#C8DBEE', 45, 125]} />
 
           {/* Full Campus 3D Architecture */}
           <Campus showZoneMarkers={false} />

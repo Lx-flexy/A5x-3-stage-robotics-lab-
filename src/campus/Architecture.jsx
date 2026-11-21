@@ -15,36 +15,17 @@ export function Architecture() {
   const doorStates = useStore((state) => state.doorStates);
   const showCeiling = useStore((state) => state.showCeiling);
 
-  // References to animated sliding doors
-  const entranceDoorLeftRef = useRef();
-  const entranceDoorRightRef = useRef();
+  // References to animated sliding doors (Interior inter-bay portals)
   const alphaBetaDoorRef = useRef();
   const betaGammaDoorRef = useRef();
   const gammaArenaDoorRef = useRef();
 
-  const { labHeight, wallThickness, doorWidth } = CAMPUS_CONFIG.dimensions;
-  const totalWidth = CAMPUS_CONFIG.totalWidth; // 58m
+  const { labHeight, wallThickness } = CAMPUS_CONFIG.dimensions;
+  const totalWidth = CAMPUS_CONFIG.totalWidth; // 60m
 
-  // Smooth door animation loop
+  // Smooth door animation loop for interior partitions
   useFrame((_, delta) => {
     const speed = 6.0;
-
-    // Main Entrance Doors (Split slide along X at X=8, Z=12)
-    if (entranceDoorLeftRef.current && entranceDoorRightRef.current) {
-      const openOffset = doorStates['door-main-entrance'] ? 1.5 : 0;
-      entranceDoorLeftRef.current.position.x = THREE.MathUtils.damp(
-        entranceDoorLeftRef.current.position.x,
-        -0.75 - openOffset,
-        speed,
-        delta
-      );
-      entranceDoorRightRef.current.position.x = THREE.MathUtils.damp(
-        entranceDoorRightRef.current.position.x,
-        0.75 + openOffset,
-        speed,
-        delta
-      );
-    }
 
     // Alpha-Beta Door (Slides along Z at X=16)
     if (alphaBetaDoorRef.current) {
@@ -265,133 +246,7 @@ export function Architecture() {
       </group>
 
       {/* =========================================================================
-          5. FRONT FAÇADE (Z = 12) - Glass Partitions, Mullions, Main Entrance
-         ========================================================================= */}
-      {/* Alpha Front Left (x: 0 to 6.5) */}
-      <group position={[3.25, 0, 12]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[6.5, 0.9, wallThickness]} />
-          <primitive object={materials.interiorWall} />
-        </mesh>
-        <mesh position={[0, 2.0, 0]}>
-          <boxGeometry args={[6.4, 2.2, 0.06]} />
-          <primitive object={materials.glass} />
-        </mesh>
-        <mesh position={[0, 3.3, 0]}>
-          <boxGeometry args={[6.5, 0.6, wallThickness]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-      </group>
-
-      {/* Alpha Main Entrance Door Opening (x: 6.5 to 9.5) */}
-      <group position={[8, 0, 12]}>
-        <mesh position={[0, 2.8 + (labHeight - 2.8) / 2, 0]}>
-          <boxGeometry args={[3.0, labHeight - 2.8, wallThickness * 1.2]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[-1.5, 1.4, 0]}>
-          <boxGeometry args={[0.1, 2.8, wallThickness * 1.2]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[1.5, 1.4, 0]}>
-          <boxGeometry args={[0.1, 2.8, wallThickness * 1.2]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        {/* Double Sliding Glass Doors */}
-        <mesh ref={entranceDoorLeftRef} position={[-0.75, 1.4, 0]}>
-          <boxGeometry args={[1.48, 2.75, 0.06]} />
-          <primitive object={materials.tintedGlass} />
-        </mesh>
-        <mesh ref={entranceDoorRightRef} position={[0.75, 1.4, 0]}>
-          <boxGeometry args={[1.48, 2.75, 0.06]} />
-          <primitive object={materials.tintedGlass} />
-        </mesh>
-      </group>
-
-      {/* Alpha Front Right (x: 9.5 to 16) */}
-      <group position={[12.75, 0, 12]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[6.5, 0.9, wallThickness]} />
-          <primitive object={materials.interiorWall} />
-        </mesh>
-        <mesh position={[0, 2.0, 0]}>
-          <boxGeometry args={[6.4, 2.2, 0.06]} />
-          <primitive object={materials.glass} />
-        </mesh>
-        <mesh position={[0, 3.3, 0]}>
-          <boxGeometry args={[6.5, 0.6, wallThickness]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-      </group>
-
-      {/* Beta Front Wall (x: 16 to 32) Glass facade */}
-      <group position={[24, 0, 12]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[16, 0.9, wallThickness]} />
-          <primitive object={materials.interiorWall} />
-        </mesh>
-        <mesh position={[0, 2.0, 0]}>
-          <boxGeometry args={[15.9, 2.2, 0.06]} />
-          <primitive object={materials.glass} />
-        </mesh>
-        {[-5.3, 0, 5.3].map((mx) => (
-          <mesh key={`beta-mullion-${mx}`} position={[mx, 2.0, 0]}>
-            <boxGeometry args={[0.08, 2.2, 0.1]} />
-            <primitive object={materials.darkMetal} />
-          </mesh>
-        ))}
-        <mesh position={[0, 3.3, 0]}>
-          <boxGeometry args={[16, 0.6, wallThickness]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-      </group>
-
-      {/* Gamma Main Front Wall (x: 32 to 48) Glass facade */}
-      <group position={[40, 0, 12]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[16, 0.9, wallThickness]} />
-          <primitive object={materials.interiorWall} />
-        </mesh>
-        <mesh position={[0, 2.0, 0]}>
-          <boxGeometry args={[15.9, 2.2, 0.06]} />
-          <primitive object={materials.glass} />
-        </mesh>
-        {[-5.3, 0, 5.3].map((mx) => (
-          <mesh key={`gamma-m-mullion-${mx}`} position={[mx, 2.0, 0]}>
-            <boxGeometry args={[0.08, 2.2, 0.1]} />
-            <primitive object={materials.darkMetal} />
-          </mesh>
-        ))}
-        <mesh position={[0, 3.3, 0]}>
-          <boxGeometry args={[16, 0.6, wallThickness]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-      </group>
-
-      {/* Gamma Arena Front Wall (x: 48 to 60) Glass facade into Arena Bay */}
-      <group position={[54, 0, 12]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[12, 0.9, wallThickness]} />
-          <primitive object={materials.interiorWall} />
-        </mesh>
-        <mesh position={[0, 2.0, 0]}>
-          <boxGeometry args={[11.9, 2.2, 0.06]} />
-          <primitive object={materials.glass} />
-        </mesh>
-        {[-4.0, 0, 4.0].map((mx) => (
-          <mesh key={`arena-front-mullion-${mx}`} position={[mx, 2.0, 0]}>
-            <boxGeometry args={[0.08, 2.2, 0.1]} />
-            <primitive object={materials.darkMetal} />
-          </mesh>
-        ))}
-        <mesh position={[0, 3.3, 0]}>
-          <boxGeometry args={[12, 0.6, wallThickness]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-      </group>
-
-      {/* =========================================================================
-          6. CEILING GRID & RECESSED LED PANELS (Only rendered when showCeiling is true)
+          5. CEILING GRID & RECESSED LED PANELS (Only rendered when showCeiling is true)
          ========================================================================= */}
       {showCeiling && (
         <group position={[totalWidth / 2, labHeight, 6]}>
