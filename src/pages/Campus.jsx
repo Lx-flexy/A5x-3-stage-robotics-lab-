@@ -151,8 +151,56 @@ export default function CampusPage() {
     }
   };
 
-  // Keyboard shortcut for Pause (ESC), Map (M), and Dev Camera Pose (C)
+  // Keyboard shortcut for Pause (ESC), Map (M), Dev Camera Pose (C), and Door Test Harness (T)
   useEffect(() => {
+    const doorPresets = [
+      { name: 'Alpha-Beta from Alpha (Side A)', pos: [13.2, 1.65, 6.0], rot: -Math.PI / 2, lab: 'alpha', door: 'door-alpha-beta' },
+      { name: 'Alpha-Beta from Beta (Side B)', pos: [18.8, 1.65, 6.0], rot: Math.PI / 2, lab: 'beta', door: 'door-alpha-beta' },
+      { name: 'Beta-Gamma from Beta (Side A)', pos: [29.2, 1.65, 6.0], rot: -Math.PI / 2, lab: 'beta', door: 'door-beta-gamma' },
+      { name: 'Beta-Gamma from Gamma (Side B)', pos: [34.8, 1.65, 6.0], rot: Math.PI / 2, lab: 'gamma', door: 'door-beta-gamma' },
+      { name: 'Gamma-Arena from Gamma (Side A)', pos: [45.2, 1.65, 6.0], rot: -Math.PI / 2, lab: 'gamma', door: 'door-gamma-arena' },
+      { name: 'Gamma-Arena from Arena (Side B)', pos: [50.8, 1.65, 6.0], rot: Math.PI / 2, lab: 'gamma-arena', door: 'door-gamma-arena' },
+      { name: 'Main Entrance Exterior (Side A)', pos: [8.0, 1.65, 14.8], rot: 0, lab: 'exterior', door: 'door-main-entrance' },
+      { name: 'Main Entrance from Alpha (Side B)', pos: [8.0, 1.65, 9.2], rot: Math.PI, lab: 'alpha', door: 'door-main-entrance' },
+    ];
+    let currentIdx = 0;
+
+    const testHarness = {
+      cyclePreset: () => {
+        const p = doorPresets[currentIdx];
+        handleModeChange('firstPerson');
+        useStore.getState().setPlayerPosition(p.pos);
+        useStore.getState().setPlayerRotation(p.rot);
+        useStore.getState().setActiveLabId(p.lab);
+        useStore.getState().setShowCeiling(true);
+        const curState = useStore.getState().doorStates[p.door];
+        useStore.getState().setDoorOpen(p.door, !curState);
+        console.log(`[Dev Key T] Preset ${currentIdx}: ${p.name} | Toggled ${p.door} -> ${!curState ? 'OPEN' : 'CLOSED'}`);
+        currentIdx = (currentIdx + 1) % doorPresets.length;
+      },
+      setPreset: (idx) => {
+        if (idx < 0 || idx >= doorPresets.length) return;
+        currentIdx = idx;
+        const p = doorPresets[idx];
+        handleModeChange('firstPerson');
+        useStore.getState().setPlayerPosition(p.pos);
+        useStore.getState().setPlayerRotation(p.rot);
+        useStore.getState().setActiveLabId(p.lab);
+        useStore.getState().setShowCeiling(true);
+        console.log(`[Dev Key T] Set Preset ${idx}: ${p.name}`);
+      },
+      toggleDoor: (doorId) => {
+        const cur = useStore.getState().doorStates[doorId];
+        useStore.getState().setDoorOpen(doorId, !cur);
+        console.log(`[Dev Key T] ${doorId} -> ${!cur ? 'OPEN' : 'CLOSED'}`);
+      },
+      getPresets: () => doorPresets
+    };
+
+    if (typeof window !== 'undefined') {
+      window.__doorTestHarness = testHarness;
+    }
+
     const handleKeyDown = (e) => {
       if (e.code === 'KeyC') {
         handleModeChange('firstPerson');
@@ -160,6 +208,9 @@ export default function CampusPage() {
         useStore.getState().setPlayerRotation(0);
         useStore.getState().setActiveLabId('alpha');
         useStore.getState().setShowCeiling(true);
+      }
+      if (e.code === 'KeyT') {
+        testHarness.cyclePreset();
       }
       if (e.code === 'KeyM' && !activeInteraction && !isPauseOpen && !isSettingsOpen) {
         setIsMapOpen((prev) => !prev);

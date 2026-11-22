@@ -58,21 +58,30 @@ export function BetaRightWall() {
 
   return (
     <group name="beta-right-wall">
-      {/* Navy feature wall */}
-      <mesh position={[labX - 0.12, 1.8, 6.0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[11.8, 3.6]} />
+      {/* Navy feature wall: Back Segment (Z: 0 to 4.5) */}
+      <mesh position={[labX - 0.12, 1.8, 2.25]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 3.6]} />
+        <meshStandardMaterial color="#071B3A" roughness={0.35} metalness={0.15} />
+      </mesh>
+      {/* Navy feature wall: Front Segment (Z: 7.5 to 12) */}
+      <mesh position={[labX - 0.12, 1.8, 9.75]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 3.6]} />
         <meshStandardMaterial color="#071B3A" roughness={0.35} metalness={0.15} />
       </mesh>
 
-      {/* Logo + "IMPOSSIBLE ENGINEERING." banner high on wall */}
-      <mesh position={[labX - 0.13, 3.15, 6.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[11.8, 0.65]} />
+      {/* Logo + "IMPOSSIBLE ENGINEERING." banner high on wall (Back Segment Z = 2.25) */}
+      <mesh position={[labX - 0.13, 3.15, 2.25]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 0.65]} />
         <meshStandardMaterial color="#071B3A" roughness={0.35} metalness={0.15} />
       </mesh>
 
       {/* Blue LED accent at top */}
-      <mesh position={[labX - 0.14, 3.42, 6.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <boxGeometry args={[11.8, 0.035, 0.02]} />
+      <mesh position={[labX - 0.14, 3.42, 2.25]} rotation={[0, -Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.035, 0.02]} />
+        <primitive object={blueLedMaterial} />
+      </mesh>
+      <mesh position={[labX - 0.14, 3.42, 9.75]} rotation={[0, -Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.035, 0.02]} />
         <primitive object={blueLedMaterial} />
       </mesh>
 

@@ -95,29 +95,45 @@ export function BetaLeftWall() {
   return (
     <group name="beta-left-wall-revision11">
       {/* ================================================================
-          1. WALL ARCHITECTURE & NAVY HEADER BAND (Full Wall Width 11.8m)
+          1. WALL ARCHITECTURE & NAVY HEADER BAND
+             Clear 3.0m door opening at Z in [4.5, 7.5] for Alpha-Beta AutoDoor!
          ================================================================ */}
-      {/* Navy Header Band (from Y = 2.2m to ceiling Y = 3.6m) */}
-      <mesh position={[labX + 0.02, 2.90, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[11.8, 1.4]} />
+      {/* Navy Header Band: Back Segment (Z: 0 to 4.5) */}
+      <mesh position={[labX + 0.02, 2.90, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 1.4]} />
+        <meshStandardMaterial color="#071B3A" roughness={0.35} metalness={0.15} />
+      </mesh>
+      {/* Navy Header Band: Front Segment (Z: 7.5 to 12) */}
+      <mesh position={[labX + 0.02, 2.90, 9.75]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 1.4]} />
         <meshStandardMaterial color="#071B3A" roughness={0.35} metalness={0.15} />
       </mesh>
 
-      {/* Electric-Blue LED Underline below Navy Band (at Y = 2.20m) */}
-      <mesh position={[labX + 0.03, 2.20, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <boxGeometry args={[11.8, 0.025, 0.015]} />
+      {/* Electric-Blue LED Underline below Navy Band */}
+      <mesh position={[labX + 0.03, 2.20, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.025, 0.015]} />
+        <primitive object={blueLedMaterial} />
+      </mesh>
+      <mesh position={[labX + 0.03, 2.20, 9.75]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.025, 0.015]} />
         <primitive object={blueLedMaterial} />
       </mesh>
 
-      {/* A5X INDUSTRIES | IMPOSSIBLE ENGINEERING. Raised 3D Logo on Navy Header */}
-      <mesh position={[labX + 0.03, 2.95, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.2, 0.7]} />
+      {/* A5X INDUSTRIES Raised 3D Logo on Back Segment Navy Header (Z = 2.25) */}
+      <mesh position={[labX + 0.03, 2.95, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[3.2, 0.6]} />
         <meshBasicMaterial map={logoTexture} transparent toneMapped={false} />
       </mesh>
 
       {/* Lower Wall (from Y = 0 to 2.2m): Light Architectural Grey #E2E8F0 */}
-      <mesh position={[labX + 0.01, 1.10, 6.0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[11.8, 2.2]} />
+      {/* Back Segment (Z: 0 to 4.5) */}
+      <mesh position={[labX + 0.01, 1.10, 2.25]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 2.2]} />
+        <meshStandardMaterial color="#E2E8F0" roughness={0.7} />
+      </mesh>
+      {/* Front Segment (Z: 7.5 to 12) */}
+      <mesh position={[labX + 0.01, 1.10, 9.75]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 2.2]} />
         <meshStandardMaterial color="#E2E8F0" roughness={0.7} />
       </mesh>
 

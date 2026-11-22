@@ -60,38 +60,10 @@ export function GammaRightWall() {
   return (
     <group name="gamma-right-wall">
       {/* ================================================================
-          1. ARENA BAY ENTRANCE SIGN (Above Door at Z = 6.0, Y = 2.95m)
+          1. DOOR OPENING TO ARENA BAY (Z = 6.0m)
+             Handled cleanly by <AutoDoor id="door-gamma-arena" /> with
+             two-sided lintel signage and 1.5m clearance.
          ================================================================ */}
-      <group position={[wallX - 0.06, 2.95, 6.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[3.2, 0.44, 0.04]} />
-          <meshStandardMaterial color="#071B3A" roughness={0.3} metalness={0.6} />
-        </mesh>
-        <mesh position={[0, -0.20, 0.024]}>
-          <boxGeometry args={[3.1, 0.025, 0.015]} />
-          <primitive object={blueLedMaterial} />
-        </mesh>
-        <mesh position={[0, 0, 0.026]}>
-          <planeGeometry args={[3.0, 0.38]} />
-          <meshBasicMaterial
-            map={useMemo(() => {
-              const canvas = document.createElement('canvas');
-              canvas.width = 960; canvas.height = 120;
-              const ctx = canvas.getContext('2d');
-              ctx.fillStyle = '#FFFFFF';
-              ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-              ctx.textAlign = 'center';
-              ctx.fillText('🤖  ROBOTICS TESTING ARENA', 480, 52);
-              ctx.fillStyle = '#38BDF8';
-              ctx.font = '500 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-              ctx.fillText('AUTONOMOUS MOBILITY • SLAM TRACK • OBSTACLE AVOIDANCE', 480, 92);
-              return new THREE.CanvasTexture(canvas);
-            }, [])}
-            transparent
-            toneMapped={false}
-          />
-        </mesh>
-      </group>
 
       {/* ================================================================
           2. DESIGN & PRINT CORNER (RIGHT WALL BACK SEGMENT, Z in [0.6, 4.2])

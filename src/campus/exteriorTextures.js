@@ -59,7 +59,7 @@ export function getPlazaTilesTexture() {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(16, 6); // 16x along 80m, 6x along 14m depth
+  texture.repeat.set(16, 6);
   texture.anisotropy = 8;
   texture.colorSpace = THREE.SRGBColorSpace;
   textureCache.set(key, texture);
@@ -82,13 +82,11 @@ export function getWalkwayStoneTexture() {
   ctx.fillStyle = '#E2E8F0';
   ctx.fillRect(0, 0, 512, 512);
 
-  // Subtle linear texture
   for (let y = 0; y < 512; y += 4) {
     ctx.fillStyle = Math.random() > 0.5 ? '#DCE4EE' : '#E8EEF5';
     ctx.fillRect(0, y, 512, 2);
   }
 
-  // Cross joint lines every 128px
   ctx.strokeStyle = '#B0C0D4';
   ctx.lineWidth = 2;
   for (let y = 0; y <= 512; y += 128) {
@@ -123,7 +121,6 @@ export function getA5XInlayTexture() {
   ctx.fillStyle = '#0F172A';
   ctx.fillRect(0, 0, 512, 512);
 
-  // Outer gold/bronze ring
   ctx.strokeStyle = '#38BDF8';
   ctx.lineWidth = 14;
   ctx.beginPath();
@@ -136,14 +133,12 @@ export function getA5XInlayTexture() {
   ctx.arc(256, 256, 200, 0, Math.PI * 2);
   ctx.stroke();
 
-  // A5X Letters
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '900 130px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('A5X', 256, 230);
 
-  // Subtitle
   ctx.fillStyle = '#38BDF8';
   ctx.font = '700 30px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.letterSpacing = '6px';
@@ -157,75 +152,96 @@ export function getA5XInlayTexture() {
 }
 
 /**
- * Main Building Sign (Fascia Band Above Canopy, 2048x256)
- * "A5X INDUSTRIES | IMPOSSIBLE ENGINEERING." (One block, toneMapped false)
+ * Big Rooftop Brand Board Texture (2048x512)
+ * Full horizontal identity:
+ * - Left: A5X Chevron Logo + "A5X INDUSTRIES" (large white bold raised letters)
+ * - Center: Vertical divider
+ * - Right: "ROBOTICS LAB" (electric-blue bold large) + "IMPOSSIBLE ENGINEERING." (white small caps)
  */
-export function getMainBuildingFasciaTexture() {
-  const key = 'main-building-fascia-2048';
+export function getRooftopBrandBoardTexture() {
+  const key = 'rooftop-brand-board-2048x512';
   if (textureCache.has(key)) return textureCache.get(key);
 
   const canvas = document.createElement('canvas');
   canvas.width = 2048;
-  canvas.height = 256;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
   // Deep Navy background matching #071B3A
   ctx.fillStyle = '#071B3A';
-  ctx.fillRect(0, 0, 2048, 256);
+  ctx.fillRect(0, 0, 2048, 512);
 
-  // Subtle brushed metallic gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
-  grad.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0.25)');
+  // Brushed steel subtle metallic gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, 'rgba(255, 255, 255, 0.10)');
+  grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.0)');
+  grad.addColorStop(1, 'rgba(0, 0, 0, 0.35)');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 2048, 256);
+  ctx.fillRect(0, 0, 2048, 512);
 
-  // Blue LED border line at bottom
-  ctx.fillStyle = '#1677FF';
-  ctx.fillRect(0, 246, 2048, 10);
+  // Perimeter electric-blue (#1677FF) LED outline
+  ctx.strokeStyle = '#1677FF';
+  ctx.lineWidth = 14;
+  ctx.strokeRect(7, 7, 2034, 498);
 
-  // Logo Icon / Chevron
+  // Inner subtle cyan line
+  ctx.strokeStyle = '#38BDF8';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(22, 22, 2004, 468);
+
+  // Left Section: A5X Chevron Logo Mark
   ctx.fillStyle = '#1677FF';
   ctx.beginPath();
-  ctx.moveTo(180, 70);
-  ctx.lineTo(230, 128);
-  ctx.lineTo(180, 186);
-  ctx.lineTo(205, 186);
-  ctx.lineTo(255, 128);
-  ctx.lineTo(205, 70);
+  ctx.moveTo(90, 150);
+  ctx.lineTo(170, 256);
+  ctx.lineTo(90, 362);
+  ctx.lineTo(135, 362);
+  ctx.lineTo(215, 256);
+  ctx.lineTo(135, 150);
   ctx.closePath();
   ctx.fill();
 
   ctx.fillStyle = '#38BDF8';
   ctx.beginPath();
-  ctx.moveTo(225, 70);
-  ctx.lineTo(275, 128);
-  ctx.lineTo(225, 186);
-  ctx.lineTo(250, 186);
-  ctx.lineTo(300, 128);
-  ctx.lineTo(250, 70);
+  ctx.moveTo(170, 150);
+  ctx.lineTo(250, 256);
+  ctx.lineTo(170, 362);
+  ctx.lineTo(215, 362);
+  ctx.lineTo(295, 256);
+  ctx.lineTo(215, 150);
   ctx.closePath();
   ctx.fill();
 
-  // "A5X INDUSTRIES"
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 86px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  // "A5X INDUSTRIES" (Raised 3D White Bold Letters)
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('A5X INDUSTRIES', 320, 128);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.font = '900 114px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText('A5X INDUSTRIES', 335, 260);
 
-  // Thin vertical divider
-  ctx.fillStyle = '#64748B';
-  ctx.fillRect(1060, 50, 4, 156);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillText('A5X INDUSTRIES', 330, 256);
 
-  // "IMPOSSIBLE ENGINEERING."
+  // Center: Thin white vertical divider
+  ctx.fillStyle = '#475569';
+  ctx.fillRect(1160, 90, 6, 332);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(1161, 100, 4, 312);
+
+  // Right Section: "ROBOTICS LAB" in electric blue bold large
   ctx.fillStyle = '#38BDF8';
-  ctx.font = '700 68px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-  ctx.fillText('IMPOSSIBLE ENGINEERING.', 1110, 128);
+  ctx.font = '900 108px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText('ROBOTICS LAB', 1230, 210);
+
+  // Below it: "IMPOSSIBLE ENGINEERING." in white small caps
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '800 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.letterSpacing = '6px';
+  ctx.fillText('IMPOSSIBLE ENGINEERING.', 1234, 316);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.anisotropy = 8;
+  texture.generateMipmaps = true;
   texture.colorSpace = THREE.SRGBColorSpace;
   textureCache.set(key, texture);
   return texture;
@@ -297,7 +313,7 @@ export function getLabFasciaPlateTexture(labId) {
   ctx.font = '600 44px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.fillText(subtitle, 260, 168);
 
-  // Level Chip Pill (e.g. "LEARN", "BUILD", "INNOVATE")
+  // Level Chip Pill
   ctx.font = '800 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   const chipWidth = ctx.measureText(chip).width + 36;
   const chipX = 1024 - chipWidth - 40;
@@ -339,7 +355,6 @@ export function getLetterBadgeTexture(letter) {
   ctx.lineWidth = 10;
   ctx.strokeRect(6, 6, 244, 244);
 
-  // Subtle inner glow line
   ctx.strokeStyle = '#38BDF8';
   ctx.lineWidth = 3;
   ctx.strokeRect(18, 18, 220, 220);
@@ -359,7 +374,6 @@ export function getLetterBadgeTexture(letter) {
 
 /**
  * Wayfinding Totem Board Texture (512x1024)
- * "LAB ALPHA > BETA > GAMMA"
  */
 export function getWayfindingTotemTexture() {
   const key = 'wayfinding-totem-512x1024';
@@ -373,11 +387,9 @@ export function getWayfindingTotemTexture() {
   ctx.fillStyle = '#071B3A';
   ctx.fillRect(0, 0, 512, 1024);
 
-  // Electric blue top accent
   ctx.fillStyle = '#1677FF';
   ctx.fillRect(0, 0, 512, 16);
 
-  // Campus Logo
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '900 52px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.textAlign = 'center';
@@ -468,7 +480,6 @@ export function getA5XFlagTexture() {
   ctx.fillStyle = '#071B3A';
   ctx.fillRect(0, 0, 512, 256);
 
-  // Diagonal blue stripe
   ctx.fillStyle = '#1677FF';
   ctx.beginPath();
   ctx.moveTo(0, 0);
@@ -478,7 +489,6 @@ export function getA5XFlagTexture() {
   ctx.closePath();
   ctx.fill();
 
-  // White A5X Mark
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '900 110px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   ctx.textAlign = 'center';

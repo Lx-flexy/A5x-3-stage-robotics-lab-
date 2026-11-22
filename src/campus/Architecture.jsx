@@ -1,65 +1,21 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import * as THREE from 'three';
 import { useCampusMaterials } from './Materials';
 import { CAMPUS_CONFIG } from '../data/config';
 import { useStore } from '../store/useStore';
-import { useFrame } from '@react-three/fiber';
+import { AutoDoor } from './AutoDoor';
 
 /**
  * Campus Architecture - Floor slabs, Navy feature walls, Glass partitions,
- * and Proximity-triggered sliding glass doors.
- * Revision 2: 58m total width, two-bay Gamma with full-height glass partition at X=48.
+ * and Universal AutoDoors.
+ * Revision 20: Pristine two-sided rendering and dual sliding glass leaves for all portals.
  */
 export function Architecture() {
   const materials = useCampusMaterials();
-  const doorStates = useStore((state) => state.doorStates);
   const showCeiling = useStore((state) => state.showCeiling);
-
-  // References to animated sliding doors (Interior inter-bay portals)
-  const alphaBetaDoorRef = useRef();
-  const betaGammaDoorRef = useRef();
-  const gammaArenaDoorRef = useRef();
 
   const { labHeight, wallThickness } = CAMPUS_CONFIG.dimensions;
   const totalWidth = CAMPUS_CONFIG.totalWidth; // 60m
-
-  // Smooth door animation loop for interior partitions
-  useFrame((_, delta) => {
-    const speed = 6.0;
-
-    // Alpha-Beta Door (Slides along Z at X=16)
-    if (alphaBetaDoorRef.current) {
-      const targetZ = doorStates['door-alpha-beta'] ? 9.2 : 6.0;
-      alphaBetaDoorRef.current.position.z = THREE.MathUtils.damp(
-        alphaBetaDoorRef.current.position.z,
-        targetZ,
-        speed,
-        delta
-      );
-    }
-
-    // Beta-Gamma Door (Slides along Z at X=32)
-    if (betaGammaDoorRef.current) {
-      const targetZ = doorStates['door-beta-gamma'] ? 9.2 : 6.0;
-      betaGammaDoorRef.current.position.z = THREE.MathUtils.damp(
-        betaGammaDoorRef.current.position.z,
-        targetZ,
-        speed,
-        delta
-      );
-    }
-
-    // Gamma Main - Arena Door (Slides along Z at X=48)
-    if (gammaArenaDoorRef.current) {
-      const targetZ = doorStates['door-gamma-arena'] ? 9.2 : 6.0;
-      gammaArenaDoorRef.current.position.z = THREE.MathUtils.damp(
-        gammaArenaDoorRef.current.position.z,
-        targetZ,
-        speed,
-        delta
-      );
-    }
-  });
 
   // Four floor segments: Alpha (0-16), Beta (16-32), Gamma Main (32-48), Gamma Arena (48-60)
   const floorSegments = [
@@ -166,23 +122,18 @@ export function Architecture() {
           <boxGeometry args={[wallThickness, labHeight, 4.5]} />
           <primitive object={materials.interiorWall} />
         </mesh>
-        <mesh position={[0, 2.8 + (labHeight - 2.8) / 2, 6.0]}>
-          <boxGeometry args={[wallThickness * 1.1, labHeight - 2.8, 3.0]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[0, 1.4, 4.5]}>
-          <boxGeometry args={[wallThickness * 1.2, 2.8, 0.1]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[0, 1.4, 7.5]}>
-          <boxGeometry args={[wallThickness * 1.2, 2.8, 0.1]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        {/* Sliding Glass Door Alpha <-> Beta */}
-        <mesh ref={alphaBetaDoorRef} position={[0, 1.4, 6.0]}>
-          <boxGeometry args={[0.06, 2.76, 2.92]} />
-          <primitive object={materials.tintedGlass} />
-        </mesh>
+        <AutoDoor
+          id="door-alpha-beta"
+          position={[0, 0, 6.0]}
+          axis="x"
+          width={3.0}
+          height={2.4}
+          wallThickness={wallThickness}
+          labelSideA="LAB BETA ▶"
+          subLabelSideA="DEVELOPMENT LAB"
+          labelSideB="◀ LAB ALPHA"
+          subLabelSideB="FOUNDATION LAB"
+        />
       </group>
 
       {/* Partition 2: Beta <-> Gamma Main (at X = 32) */}
@@ -195,54 +146,61 @@ export function Architecture() {
           <boxGeometry args={[wallThickness, labHeight, 4.5]} />
           <primitive object={materials.interiorWall} />
         </mesh>
-        <mesh position={[0, 2.8 + (labHeight - 2.8) / 2, 6.0]}>
-          <boxGeometry args={[wallThickness * 1.1, labHeight - 2.8, 3.0]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[0, 1.4, 4.5]}>
-          <boxGeometry args={[wallThickness * 1.2, 2.8, 0.1]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        <mesh position={[0, 1.4, 7.5]}>
-          <boxGeometry args={[wallThickness * 1.2, 2.8, 0.1]} />
-          <primitive object={materials.darkMetal} />
-        </mesh>
-        {/* Sliding Glass Door Beta <-> Gamma */}
-        <mesh ref={betaGammaDoorRef} position={[0, 1.4, 6.0]}>
-          <boxGeometry args={[0.06, 2.76, 2.92]} />
-          <primitive object={materials.tintedGlass} />
-        </mesh>
+        <AutoDoor
+          id="door-beta-gamma"
+          position={[0, 0, 6.0]}
+          axis="x"
+          width={3.0}
+          height={2.4}
+          wallThickness={wallThickness}
+          labelSideA="LAB GAMMA ▶"
+          subLabelSideA="ADVANCED INNOVATION LAB"
+          labelSideB="◀ LAB BETA"
+          subLabelSideB="DEVELOPMENT LAB"
+        />
       </group>
 
       {/* Partition 3: Gamma Main <-> Gamma Arena (at X = 48) - FULL-HEIGHT GLASS OBSERVATION WALL */}
       <group position={[48, 0, 0]}>
         {/* Back Glass Section: Z in [0, 4.5] */}
-        <mesh position={[0, 1.4, 2.25]}>
-          <boxGeometry args={[0.08, 2.8, 4.5]} />
+        <mesh position={[0, 1.2, 2.25]}>
+          <boxGeometry args={[0.08, 2.4, 4.5]} />
           <primitive object={materials.glass} />
         </mesh>
         {/* Front Glass Section: Z in [7.5, 12] */}
-        <mesh position={[0, 1.4, 9.75]}>
-          <boxGeometry args={[0.08, 2.8, 4.5]} />
+        <mesh position={[0, 1.2, 9.75]}>
+          <boxGeometry args={[0.08, 2.4, 4.5]} />
           <primitive object={materials.glass} />
         </mesh>
-        {/* Structural Mullions */}
+        {/* Observation Wall Mullions */}
         {[0.1, 2.25, 4.5, 7.5, 9.75, 11.9].map((mz) => (
-          <mesh key={`arena-mullion-${mz}`} position={[0, 1.4, mz]}>
-            <boxGeometry args={[0.12, 2.8, 0.08]} />
-            <primitive object={materials.darkMetal} />
+          <mesh key={`arena-mullion-${mz}`} position={[0, 1.2, mz]}>
+            <boxGeometry args={[0.10, 2.4, 0.05]} />
+            <meshStandardMaterial color="#1B1F27" roughness={0.35} metalness={0.85} />
           </mesh>
         ))}
-        {/* Overhead Lintel (Y in [2.8, 3.6]) */}
-        <mesh position={[0, 2.8 + (labHeight - 2.8) / 2, 6.0]}>
-          <boxGeometry args={[wallThickness, labHeight - 2.8, 12]} />
-          <primitive object={materials.darkMetal} />
+        {/* Overhead Observation Lintel (Y in [2.4, 3.6m], Light Grey with Navy trim, never black) */}
+        <mesh position={[0, 3.0, 2.25]}>
+          <boxGeometry args={[wallThickness, 1.2, 4.5]} />
+          <primitive object={materials.interiorWall} />
         </mesh>
-        {/* Sliding Glass Door Gamma Main <-> Arena Bay (Z in [4.5, 7.5]) */}
-        <mesh ref={gammaArenaDoorRef} position={[0, 1.4, 6.0]}>
-          <boxGeometry args={[0.06, 2.76, 2.92]} />
-          <primitive object={materials.tintedGlass} />
+        <mesh position={[0, 3.0, 9.75]}>
+          <boxGeometry args={[wallThickness, 1.2, 4.5]} />
+          <primitive object={materials.interiorWall} />
         </mesh>
+        {/* Sliding AutoDoor Gamma Main <-> Arena Bay (Z in [4.5, 7.5]) */}
+        <AutoDoor
+          id="door-gamma-arena"
+          position={[0, 0, 6.0]}
+          axis="x"
+          width={3.0}
+          height={2.4}
+          wallThickness={wallThickness}
+          labelSideA="ARENA BAY ▶"
+          subLabelSideA="AUTONOMOUS PROVING GROUND"
+          labelSideB="◀ LAB GAMMA"
+          subLabelSideB="ADVANCED INNOVATION LAB"
+        />
       </group>
 
       {/* =========================================================================

@@ -65,17 +65,28 @@ export function GammaLeftWall() {
       {/* ================================================================
           1. WALL ARCHITECTURE & WINDOW BAND (Full height 3.6m)
          ================================================================ */}
-      {/* Lower Wall Navy Overlay (Y: 0 to 2.4m) */}
-      <mesh position={[labX + 0.02, 1.2, 6.0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[11.8, 2.4]} />
+      {/* Lower Wall Navy Overlay: Back Segment (Z: 0 to 4.5) */}
+      <mesh position={[labX + 0.02, 1.2, 2.25]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 2.4]} />
+        <meshStandardMaterial color="#071B3A" roughness={0.4} metalness={0.15} />
+      </mesh>
+      {/* Lower Wall Navy Overlay: Front Segment (Z: 7.5 to 12) */}
+      <mesh position={[labX + 0.02, 1.2, 9.75]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[4.5, 2.4]} />
         <meshStandardMaterial color="#071B3A" roughness={0.4} metalness={0.15} />
       </mesh>
 
-      {/* Upper Glass Window Band with City-Night Gradient (Y: 2.4 to 3.4m) */}
-      <mesh position={[labX + 0.03, 2.9, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[11.8, 1.0]} />
+      {/* Upper Glass Window Band with City-Night Gradient: Back Segment (Z: 0 to 4.5) */}
+      <mesh position={[labX + 0.03, 2.9, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 1.0]} />
         <meshStandardMaterial color="#0F172A" roughness={0.1} metalness={0.8} />
       </mesh>
+      {/* Upper Glass Window Band with City-Night Gradient: Front Segment (Z: 7.5 to 12) */}
+      <mesh position={[labX + 0.03, 2.9, 9.75]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 1.0]} />
+        <meshStandardMaterial color="#0F172A" roughness={0.1} metalness={0.8} />
+      </mesh>
+
       {/* Window mullions (vertical black frames) */}
       {[1.0, 2.5, 4.0, 8.0, 9.5, 11.0].map((mz, mi) => (
         <mesh key={`wmullion-${mi}`} position={[labX + 0.04, 2.9, mz]}>
@@ -85,12 +96,20 @@ export function GammaLeftWall() {
       ))}
 
       {/* Fascia Trim at Ceiling (Y: 3.4 to 3.6m) with Blue LED underline */}
-      <mesh position={[labX + 0.03, 3.5, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[11.8, 0.2]} />
+      <mesh position={[labX + 0.03, 3.5, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 0.2]} />
         <primitive object={blackSteelMaterial} />
       </mesh>
-      <mesh position={[labX + 0.035, 3.4, 6.0]} rotation={[0, Math.PI / 2, 0]}>
-        <boxGeometry args={[11.8, 0.025, 0.015]} />
+      <mesh position={[labX + 0.03, 3.5, 9.75]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.5, 0.2]} />
+        <primitive object={blackSteelMaterial} />
+      </mesh>
+      <mesh position={[labX + 0.035, 3.4, 2.25]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.025, 0.015]} />
+        <primitive object={blueLedMaterial} />
+      </mesh>
+      <mesh position={[labX + 0.035, 3.4, 9.75]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[4.5, 0.025, 0.015]} />
         <primitive object={blueLedMaterial} />
       </mesh>
 

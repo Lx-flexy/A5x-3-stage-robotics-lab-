@@ -3,16 +3,17 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useStore } from '../store/useStore';
 import {
-  getMainBuildingFasciaTexture,
   getLabFasciaPlateTexture,
   getLetterBadgeTexture
 } from './exteriorTextures';
+import { getDoorPrivacyBandTexture } from './doorTextures';
 
 /**
- * High-Performance Architectural Facade (Revision 18)
+ * High-Performance Architectural Facade (Revision 19)
  * Full front exterior of A5X Complex at Z = 12 spanning X in [0, 60], height 4.4m.
  * Solid opaque walls, tall curtain-wall glazing, AutoDoor with stainless steel handles,
- * hung entrance canopy with warm downlights, single-source fascia signs, zero overlaps.
+ * column-supported entrance canopy (navy #0B2A5B underside, warm downlights, blue LED edge),
+ * single-source lab fascia plates (>= 0.5m clear from door), zero overlaps, zero hanging wires.
  */
 export function Facade() {
   const doorStates = useStore((state) => state.doorStates);
@@ -46,7 +47,16 @@ export function Facade() {
       side: THREE.FrontSide
     });
 
-    // 4. Electric Blue LED Runner (#1677FF)
+    // 4. Navy Canopy Underside Material (#0B2A5B with soft bounce so it never renders black)
+    const canopyUnderside = new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#0B2A5B'),
+      emissive: new THREE.Color('#081D3D'),
+      emissiveIntensity: 0.45,
+      roughness: 0.4,
+      metalness: 0.15
+    });
+
+    // 5. Electric Blue LED Runner (#1677FF)
     const electricBlueLed = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#1677FF'),
       emissive: new THREE.Color('#1677FF'),
@@ -54,39 +64,51 @@ export function Facade() {
       roughness: 0.2
     });
 
-    // 5. Curtain-Wall Clear Glazing (Revision 18 spec: #BFD8F2, opacity 0.20, roughness 0.05)
+    // 6. Curtain-Wall Clear Glazing (Revision 18 spec: #BFD8F2, opacity 0.20, roughness 0.05)
     const curtainGlass = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#BFD8F2'),
       opacity: 0.20,
       transparent: true,
       roughness: 0.05,
       metalness: 0.0,
+      side: THREE.DoubleSide,
       depthWrite: false
     });
 
-    // 6. Black Anodized Steel Mullions & Sash Frame (#1B1F27)
+    // 6b. Frosted Privacy Band for Sliding Doors
+    const frostedBand = new THREE.MeshStandardMaterial({
+      map: getDoorPrivacyBandTexture(),
+      transparent: true,
+      opacity: 0.55,
+      roughness: 0.3,
+      metalness: 0.05,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+
+    // 7. Black Anodized Steel Mullions, Columns & Sash Frame (#1B1F27)
     const blackSteel = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#1B1F27'),
       roughness: 0.35,
       metalness: 0.8
     });
 
-    // 7. Stainless Steel Hardware (Pull bars, tie rods)
+    // 8. Stainless Steel Hardware (Pull bars, column collars)
     const stainlessSteel = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#E2E8F0'),
       roughness: 0.15,
       metalness: 0.95
     });
 
-    // 8. Warm Downlight Emissive Lens (#FFF8EB)
+    // 9. Warm Downlight Emissive Lens (#FFF8EB)
     const warmDownlight = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#FFF8EB'),
       emissive: new THREE.Color('#FFE8BA'),
-      emissiveIntensity: 2.0,
+      emissiveIntensity: 2.2,
       roughness: 0.2
     });
 
-    // 9. Fake Sky Reflection backing (very subtle sky sheen)
+    // 10. Fake Sky Reflection backing (very subtle sky sheen)
     const fakeSkySheen = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#C9E0F8'),
       opacity: 0.07,
@@ -95,7 +117,7 @@ export function Facade() {
       depthWrite: false
     });
 
-    // 10. Solid Campus Roof Slab Material
+    // 11. Solid Campus Roof Slab Material
     const roofSlab = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#E2E8F0'),
       roughness: 0.7,
@@ -106,8 +128,10 @@ export function Facade() {
       lowerStoneWall,
       upperWhitePanel,
       navyAccent,
+      canopyUnderside,
       electricBlueLed,
       curtainGlass,
+      frostedBand,
       blackSteel,
       stainlessSteel,
       warmDownlight,
@@ -117,7 +141,6 @@ export function Facade() {
   }, []);
 
   // Textures
-  const mainFasciaTex = useMemo(() => getMainBuildingFasciaTexture(), []);
   const alphaPlateTex = useMemo(() => getLabFasciaPlateTexture('alpha'), []);
   const betaPlateTex = useMemo(() => getLabFasciaPlateTexture('beta'), []);
   const gammaPlateTex = useMemo(() => getLabFasciaPlateTexture('gamma'), []);
@@ -125,7 +148,7 @@ export function Facade() {
   const badgeBTex = useMemo(() => getLetterBadgeTexture('B'), []);
   const badgeGTex = useMemo(() => getLetterBadgeTexture('G'), []);
 
-  // Smooth cinematic sliding door animation in useFrame
+  // Smooth sliding door animation in useFrame
   useFrame((_, delta) => {
     const isOpen = Boolean(doorStates['door-main-entrance']);
     const targetLeft = isOpen ? -0.75 - 1.25 : -0.75;
@@ -334,7 +357,7 @@ export function Facade() {
           <boxGeometry args={[3.0, 0.006, 0.12]} />
         </mesh>
 
-        {/* Slim Navy Header Box (Y in [2.85, 3.15]) with A5X Badge & Motion Sensor */}
+        {/* Slim Navy Header Box (Y in [2.85, 3.15]) with centered small A5X mark & Motion Sensor */}
         <group position={[0, 3.0, 0.05]}>
           <mesh material={materials.navyAccent}>
             <boxGeometry args={[3.0, 0.3, 0.14]} />
@@ -342,12 +365,21 @@ export function Facade() {
           <mesh position={[0, -0.14, 0.075]} material={materials.electricBlueLed}>
             <boxGeometry args={[3.0, 0.02, 0.01]} />
           </mesh>
+          {/* Centered Small A5X Emblem */}
+          <group position={[0, 0.02, 0.072]}>
+            <mesh position={[-0.14, 0, 0]} material={materials.electricBlueLed}>
+              <boxGeometry args={[0.04, 0.1, 0.01]} />
+            </mesh>
+            <mesh position={[0.14, 0, 0]} material={materials.electricBlueLed}>
+              <boxGeometry args={[0.04, 0.1, 0.01]} />
+            </mesh>
+          </group>
           {/* Sensor Dome & Pilot LED */}
-          <mesh position={[0, 0, 0.075]} material={materials.blackSteel}>
-            <boxGeometry args={[0.22, 0.08, 0.03]} />
+          <mesh position={[0, -0.05, 0.075]} material={materials.blackSteel}>
+            <boxGeometry args={[0.18, 0.06, 0.03]} />
           </mesh>
-          <mesh position={[0, 0, 0.092]} material={materials.electricBlueLed}>
-            <sphereGeometry args={[0.015, 8, 8]} />
+          <mesh position={[0, -0.05, 0.092]} material={materials.electricBlueLed}>
+            <sphereGeometry args={[0.012, 8, 8]} />
           </mesh>
         </group>
 
@@ -358,15 +390,22 @@ export function Facade() {
           <mesh material={materials.curtainGlass} renderOrder={15}>
             <boxGeometry args={[1.44, 2.70, 0.03]} />
           </mesh>
+          {/* Frosted Privacy Band at Y in [1.0, 1.4m] */}
+          <mesh position={[0, -0.18, 0]} material={materials.frostedBand} renderOrder={16}>
+            <planeGeometry args={[1.40, 0.40]} />
+          </mesh>
+          {/* Opaque White Leading Edge */}
+          <mesh position={[0.71, 0, 0]}>
+            <boxGeometry args={[0.015, 2.68, 0.032]} />
+            <meshStandardMaterial color="#FFFFFF" roughness={0.3} metalness={0.1} />
+          </mesh>
           {/* Black Perimeter Sash */}
-          {/* Top/Bottom rails */}
           <mesh position={[0, 1.34, 0]} material={materials.blackSteel}>
             <boxGeometry args={[1.48, 0.05, 0.05]} />
           </mesh>
           <mesh position={[0, -1.34, 0]} material={materials.blackSteel}>
             <boxGeometry args={[1.48, 0.05, 0.05]} />
           </mesh>
-          {/* Left/Right stiles */}
           <mesh position={[-0.72, 0, 0]} material={materials.blackSteel}>
             <boxGeometry args={[0.05, 2.72, 0.05]} />
           </mesh>
@@ -374,7 +413,7 @@ export function Facade() {
             <boxGeometry args={[0.05, 2.72, 0.05]} />
           </mesh>
 
-          {/* Vertical Stainless Steel Pull Bar (Exterior face: z = 0.05, Interior face: z = -0.05) */}
+          {/* Vertical Stainless Steel Pull Bar */}
           <mesh position={[0.62, 0, 0.055]} material={materials.stainlessSteel}>
             <cylinderGeometry args={[0.015, 0.015, 1.2, 16]} />
           </mesh>
@@ -395,6 +434,15 @@ export function Facade() {
           {/* Clear Glass */}
           <mesh material={materials.curtainGlass} renderOrder={15}>
             <boxGeometry args={[1.44, 2.70, 0.03]} />
+          </mesh>
+          {/* Frosted Privacy Band at Y in [1.0, 1.4m] */}
+          <mesh position={[0, -0.18, 0]} material={materials.frostedBand} renderOrder={16}>
+            <planeGeometry args={[1.40, 0.40]} />
+          </mesh>
+          {/* Opaque White Leading Edge */}
+          <mesh position={[0.71, 0, 0]}>
+            <boxGeometry args={[0.015, 2.68, 0.032]} />
+            <meshStandardMaterial color="#FFFFFF" roughness={0.3} metalness={0.1} />
           </mesh>
           {/* Black Perimeter Sash */}
           <mesh position={[0, 1.34, 0]} material={materials.blackSteel}>
@@ -428,15 +476,22 @@ export function Facade() {
 
         {/* =======================================================================
             5. ARCHITECTURAL ENTRANCE CANOPY (Width 3.4m, Depth 1.5m, Height 3.25m)
+               - Solid steel slab (white top, navy underside #0B2A5B, NOT black)
+               - Supported by two slim black-steel columns at front corners (NO cables)
+               - Warm emissive downlight discs & thin electric-blue LED edge
            ======================================================================= */}
         <group position={[0, 3.25, 0.75]}>
-          {/* Canopy Slab */}
-          <mesh material={materials.navyAccent}>
+          {/* Canopy Slab Body */}
+          <mesh material={materials.canopyUnderside}>
             <boxGeometry args={[3.4, 0.1, 1.5]} />
           </mesh>
           {/* White Composite Top */}
           <mesh position={[0, 0.052, 0]} material={materials.upperWhitePanel}>
             <boxGeometry args={[3.4, 0.005, 1.5]} />
+          </mesh>
+          {/* Navy Underside Ceiling Facing Surface (Self-illuminated so never black) */}
+          <mesh position={[0, -0.052, 0]} rotation={[Math.PI / 2, 0, 0]} material={materials.canopyUnderside}>
+            <planeGeometry args={[3.38, 1.48]} />
           </mesh>
           {/* Dark Metal Fascia Edges */}
           <mesh position={[0, 0, 0.75]} material={materials.blackSteel}>
@@ -449,7 +504,18 @@ export function Facade() {
             <boxGeometry args={[0.02, 0.11, 1.5]} />
           </mesh>
 
-          {/* Under-Canopy Recessed Warm Downlights */}
+          {/* Thin Electric-Blue LED Edge Runner Along Front & Sides */}
+          <mesh position={[0, -0.05, 0.755]} material={materials.electricBlueLed}>
+            <boxGeometry args={[3.4, 0.015, 0.01]} />
+          </mesh>
+          <mesh position={[-1.705, -0.05, 0]} material={materials.electricBlueLed}>
+            <boxGeometry args={[0.01, 0.015, 1.5]} />
+          </mesh>
+          <mesh position={[1.705, -0.05, 0]} material={materials.electricBlueLed}>
+            <boxGeometry args={[0.01, 0.015, 1.5]} />
+          </mesh>
+
+          {/* Under-Canopy Recessed Warm Downlight Discs */}
           {[-0.8, 0.8].map((lx) => (
             <group key={`downlight-${lx}`} position={[lx, -0.052, 0]}>
               <mesh material={materials.blackSteel}>
@@ -461,46 +527,58 @@ export function Facade() {
             </group>
           ))}
 
-          {/* Diagonal Stainless Steel Hanger Tie-Rods */}
-          {/* Left Tie-Rod: anchors from outer canopy corner [ -1.6, 0.05, 0.65 ] up to facade [ -1.6, 0.8, -0.7 ] */}
-          <mesh position={[-1.6, 0.42, -0.02]} rotation={[0.55, 0, 0]} material={materials.stainlessSteel}>
-            <cylinderGeometry args={[0.014, 0.014, 1.6, 12]} />
-          </mesh>
-          {/* Right Tie-Rod */}
-          <mesh position={[1.6, 0.42, -0.02]} rotation={[0.55, 0, 0]} material={materials.stainlessSteel}>
-            <cylinderGeometry args={[0.014, 0.014, 1.6, 12]} />
-          </mesh>
+          {/* Heavy Architectural Cantilever Wall Brackets Supporting Rear */}
+          {[-1.4, 1.4].map((bx) => (
+            <group key={`bracket-${bx}`} position={[bx, -0.25, -0.45]}>
+              <mesh material={materials.blackSteel}>
+                <boxGeometry args={[0.08, 0.4, 0.6]} />
+              </mesh>
+            </group>
+          ))}
         </group>
+
+        {/* Two Slim Black-Steel Front Support Columns (Ground Y=0 to Canopy Y=3.2m, NO hanging wires) */}
+        {[-1.6, 1.6].map((cx) => (
+          <group key={`canopy-col-${cx}`} position={[cx, 0, 1.45]}>
+            {/* Stainless Steel Ground Base Collar */}
+            <mesh position={[0, 0.02, 0]} material={materials.stainlessSteel}>
+              <cylinderGeometry args={[0.06, 0.07, 0.04, 16]} />
+            </mesh>
+            {/* Vertical Steel Column (3.2m height, 60mm diameter) */}
+            <mesh position={[0, 1.6, 0]} material={materials.blackSteel}>
+              <cylinderGeometry args={[0.03, 0.03, 3.2, 16]} />
+            </mesh>
+            {/* Top Connector Collar to Canopy Underside */}
+            <mesh position={[0, 3.2, 0]} material={materials.stainlessSteel}>
+              <cylinderGeometry args={[0.06, 0.05, 0.04, 16]} />
+            </mesh>
+          </group>
+        ))}
       </group>
 
       {/* =========================================================================
-          6. FACADE SIGNAGE & BADGES (Clean, Unified, Zero Overlaps)
+          6. CLEAN LAB FASCIA SIGNAGE (Fascia Band above glazing, >= 0.5m clear from door)
          ========================================================================= */}
-      {/* 6.1 Main Building Fascia Sign (Centered above canopy at X = 8.0, Y = 3.95m) */}
-      <mesh position={[8.0, 3.95, 0.15]}>
-        <planeGeometry args={[8.0, 0.65]} />
-        <meshBasicMaterial map={mainFasciaTex} toneMapped={false} />
-      </mesh>
-
-      {/* 6.2 Lab Alpha Fascia Plate (Left of door above glazing at X = 3.7, Y = 3.85m) */}
-      <mesh position={[3.7, 3.85, 0.15]}>
-        <planeGeometry args={[4.2, 0.55]} />
+      {/* 6.1 Lab Alpha Fascia Plate (Left of door above glazing at X = 3.5, Y = 3.85m, Width 3.6m)
+             Clearance to door canopy (X = 6.3): 6.3 - 5.3 = 1.0m >= 0.5m! Zero overlap! */}
+      <mesh position={[3.5, 3.85, 0.15]}>
+        <planeGeometry args={[3.6, 0.55]} />
         <meshBasicMaterial map={alphaPlateTex} toneMapped={false} />
       </mesh>
 
-      {/* 6.3 Lab Beta Fascia Plate (Above Beta glazing at X = 24.0, Y = 3.85m) */}
-      <mesh position={[24.0, 3.85, 0.15]}>
-        <planeGeometry args={[4.6, 0.55]} />
+      {/* 6.2 Lab Beta Fascia Plate (Above Beta glazing at X = 21.0, Y = 3.85m, Width 4.4m) */}
+      <mesh position={[21.0, 3.85, 0.15]}>
+        <planeGeometry args={[4.4, 0.55]} />
         <meshBasicMaterial map={betaPlateTex} toneMapped={false} />
       </mesh>
 
-      {/* 6.4 Lab Gamma Fascia Plate (Above Gamma glazing at X = 40.0, Y = 3.85m) */}
-      <mesh position={[40.0, 3.85, 0.15]}>
-        <planeGeometry args={[5.0, 0.55]} />
+      {/* 6.3 Lab Gamma Fascia Plate (Above Gamma glazing at X = 37.0, Y = 3.85m, Width 4.8m) */}
+      <mesh position={[37.0, 3.85, 0.15]}>
+        <planeGeometry args={[4.8, 0.55]} />
         <meshBasicMaterial map={gammaPlateTex} toneMapped={false} />
       </mesh>
 
-      {/* 6.5 Letter Badges Mounted on Facade Structural Columns */}
+      {/* 6.4 Letter Badges Mounted on Facade Structural Columns */}
       {/* Badge 'A' on West Column */}
       <mesh position={[0.6, 2.4, 0.15]}>
         <planeGeometry args={[0.42, 0.42]} />

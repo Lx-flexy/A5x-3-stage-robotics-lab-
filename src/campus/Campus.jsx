@@ -2,6 +2,7 @@ import React from 'react';
 import { useStore } from '../store/useStore';
 import { Architecture } from './Architecture';
 import { Facade } from './Facade';
+import { RooftopBrandBoard } from './RooftopBrandBoard';
 import { Lighting } from './Lighting';
 import { Signage } from './Signage';
 import { EntrancePlaza } from './EntrancePlaza';
@@ -11,8 +12,8 @@ import { LabBeta } from '../labs/Beta/LabBeta';
 import { LabGamma } from '../labs/Gamma/LabGamma';
 
 /**
- * High-Performance Campus Root (Revision 18)
- * Integrates new <Facade/>, <EntrancePlaza/>, <Architecture/>, and distinct labs.
+ * High-Performance Campus Root (Revision 19)
+ * Integrates <Facade/>, <RooftopBrandBoard/>, <EntrancePlaza/>, <Architecture/>, and distinct labs.
  */
 export function Campus() {
   if (typeof window !== 'undefined') {
@@ -42,30 +43,33 @@ export function Campus() {
       {/* 3. High-Performance Front Facade, Curtain Wall Glazing & AutoDoor */}
       <Facade />
 
-      {/* 4. Brand Signage & Feature Wall Signs */}
+      {/* 4. Big Rooftop Brand Board at horizontal centre */}
+      <RooftopBrandBoard />
+
+      {/* 5. Brand Signage & Feature Wall Signs */}
       <Signage />
 
-      {/* 5. Outside Plaza Deck, Landscaping & Entrance Features */}
+      {/* 6. Outside Plaza Deck, Landscaping & Entrance Features */}
       <group visible={isOutsideVisible}>
         <EntrancePlaza />
       </group>
 
-      {/* 6. Complete Lab Alpha: Foundation Lab */}
+      {/* 7. Complete Lab Alpha: Foundation Lab */}
       <group visible={isAlphaVisible}>
         <LabAlpha />
       </group>
 
-      {/* 7. Complete Lab Beta: Development Lab */}
+      {/* 8. Complete Lab Beta: Development Lab */}
       <group visible={isBetaVisible}>
         <LabBeta />
       </group>
 
-      {/* 8. Complete Lab Gamma: Advanced Innovation Lab & Arena Bay */}
+      {/* 9. Complete Lab Gamma: Advanced Innovation Lab & Arena Bay */}
       <group visible={isGammaVisible}>
         <LabGamma />
       </group>
 
-      {/* 9. Wall-Mounted and Ceiling-Hung Architectural Zone Signage */}
+      {/* 10. Wall-Mounted and Ceiling-Hung Architectural Zone Signage */}
       <ZoneWallSignage />
     </group>
   );
